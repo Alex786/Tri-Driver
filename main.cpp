@@ -1,7 +1,7 @@
 #define SDL_MAIN_USE_CALLBACKS
-#include <stdio.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_error.h>
 #include <SDL3_image/SDL_image.h>
 
 // the vertex input layout
@@ -29,6 +29,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
 {
     // create a window
     window = SDL_CreateWindow("Hello, Triangle!", 960, 540, SDL_WINDOW_RESIZABLE);
+    if (window == NULL)
+    {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window Error", "Error creating window.\nSDL_GetError()", window);
+        return SDL_APP_FAILURE;
+    }
     
     // create the device
     device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV, true, NULL);
@@ -37,6 +42,10 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv)
     // load the vertex shader code
     size_t vertexCodeSize; 
     void* vertexCode = SDL_LoadFile("shaders/vertex.spv", &vertexCodeSize);
+    if (vertexCode == NULL) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to create vertex data: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
 
     // create the vertex shader
     SDL_GPUShaderCreateInfo vertexInfo{};
