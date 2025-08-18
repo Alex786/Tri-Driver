@@ -19,13 +19,18 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
     GIT_TAG release-3.2.4
 )
+FetchContent_Declare(
+    assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG v6.0.2
+)
 
-FetchContent_MakeAvailable(SDL3 SDL3_image)
+FetchContent_MakeAvailable(SDL3 SDL3_image assimp)
 
 # Executable
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image assimp)
 
 # Set the output directory for the executable
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -36,7 +41,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Copy DLLs on Windows
 if(WIN32)
-    foreach(dep SDL3::SDL3 SDL3_image::SDL3_image)
+    foreach(dep SDL3::SDL3 SDL3_image::SDL3_image assimp)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:${dep}>
@@ -44,3 +49,10 @@ if(WIN32)
         )
     endforeach()
 endif()
+
+# copy shaders folder to bin directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/shaders
+    ${CMAKE_BINARY_DIR}/bin/shaders
+)
