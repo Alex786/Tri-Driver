@@ -14,23 +14,24 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
     GIT_TAG release-3.2.20
 )
-FetchContent_Declare(
-    SDL3_image
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-    GIT_TAG release-3.2.4
-)
-FetchContent_Declare(
-    assimp
-    GIT_REPOSITORY https://github.com/assimp/assimp.git
-    GIT_TAG v6.0.2
-)
+#FetchContent_Declare(
+#    SDL3_image
+#    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+#    GIT_TAG release-3.2.4
+#)
+#FetchContent_Declare(
+#    assimp
+#    GIT_REPOSITORY https://github.com/assimp/assimp.git
+#    GIT_TAG v6.0.2
+#)
 
-FetchContent_MakeAvailable(SDL3 SDL3_image assimp)
+
+FetchContent_MakeAvailable(SDL3)
 
 # Executable
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image assimp)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
 
 # Set the output directory for the executable
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -41,7 +42,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # Copy DLLs on Windows
 if(WIN32)
-    foreach(dep SDL3::SDL3 SDL3_image::SDL3_image assimp)
+    foreach(dep SDL3::SDL3)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:${dep}>
